@@ -1,0 +1,106 @@
+package com.Acc.rest;
+
+
+import java.util.List;
+
+import javax.security.auth.login.AccountNotFoundException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.Acc.entity.Account;
+import com.Acc.service.AccountService;
+import com.Acc.service.SequenceGenerator;
+
+@RestController
+@RequestMapping("/Accounts")
+public class AccountRestController {
+	
+	
+	
+	@Autowired
+	private AccountService accountService;
+	
+	@Autowired
+	private SequenceGenerator sequenceGenerator ;
+	
+	/*------ Create Account -------------------------------------------------------------*/
+
+	@PostMapping("/Create")
+	@ResponseBody
+	public  Account insertAccount(@RequestBody Account acc) {
+
+		acc.setId(Long.toString(sequenceGenerator.generateSequence(Account.SEQUENCE_NAME)));
+		accountService.insertAccount(acc);
+		return acc ;
+
+	}
+	
+	
+	/*------ Delete Account -------------------------------------------------------------*/
+
+	   @GetMapping("/Delete/{id}")
+		public  void DeleteAccount(@PathVariable String id)  {
+		
+		
+			accountService.deleteAccount(id);
+
+	}
+	
+	
+		/*------ Deposit -------------------------------------------------------------------*/
+
+	
+	    @PostMapping("/deposit/id={id}&amount={amount}")
+		@ResponseBody
+		public  Account deposit(@PathVariable String id , @PathVariable int amount) 
+	    {
+   		   System.out.println(accountService.getAccount(id));
+	    	accountService.deposit(id, amount);
+			return accountService.getAccount(id) ;
+
+		}
+	    
+	    
+		/*------ Withdraw  -------------------------------------------------------------*/
+
+	    
+	    @PostMapping("/withdraw/id={id}&amount={amount}")
+		@ResponseBody
+		public  Account withdraw(@PathVariable String id , @PathVariable int amount) 
+	    {
+   		   System.out.println(accountService.getAccount(id));
+	    	accountService.withdraw(id, amount);
+			return accountService.getAccount(id) ;
+
+		}
+	    
+	    
+	    
+		/*------ get Account -------------------------------------------------------------*/
+
+	    @GetMapping("/get/{id}")
+		@ResponseBody
+		public  Account get(@PathVariable String id ) 
+	    {
+   		   System.out.println(accountService.getAccount(id));
+			return accountService.getAccount(id) ;
+
+		}
+
+
+	    @GetMapping("/MyAccounts/{id}")
+		@ResponseBody
+		public  List<Account> getAll(@PathVariable String id ) 
+	    {
+			return accountService.getAllAccounts(id) ;
+
+		}
+	    
+}
